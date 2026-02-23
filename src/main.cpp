@@ -26,8 +26,13 @@ static constexpr int MAX_BOUNCERS = 20;
 class Bouncer {
     public:
         bn::sprite_ptr sprite = bn::sprite_items::dot.create_sprite();
-        bn::fixed x_speed = BASE_SPEED;
-        bn::fixed y_speed = BASE_SPEED;
+        bn::fixed x_speed;
+        bn::fixed y_speed;
+
+        Bouncer(bn::random& rng){
+            x_speed = bn::fixed(rng.get_int(BASE_SPEED.integer()) + 1);
+            y_speed = bn::fixed(rng.get_int(BASE_SPEED.integer()) + 1);
+        }
 
         void update(){
             bn::fixed x = sprite.x();
@@ -88,26 +93,27 @@ bn::fixed average_x(bn::vector<Bouncer, MAX_BOUNCERS>& bouncers){
     return x_average;
 }
 
-void add_bouncer(bn::vector<Bouncer, MAX_BOUNCERS>& bouncers){
+void add_bouncer(bn::vector<Bouncer, MAX_BOUNCERS>& bouncers, bn::random& rng){
     // Only add if we're below the maximum
     if(bouncers.size() < bouncers.max_size()) {
-        bouncers.push_back(Bouncer());
+        bouncers.push_back(Bouncer(rng));
     }
 }
 
 int main() {
     bn::core::init();
+    bn::random rng;
 
     bn::vector<Bouncer, MAX_BOUNCERS> bouncers = {};
 
     while(true) {
         // if A is pressed add a new bouncer
         if(bn::keypad::a_pressed()) {
-            add_bouncer(bouncers);
+            add_bouncer(bouncers, rng);
         }
 
         if(bn::keypad::b_pressed()) {
-            // BN_LOG("Average x: ", average_x(sprites));
+            BN_LOG("Average x: ", average_x(bouncers));
         }
 
         // for each bouncer
