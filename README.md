@@ -1,4 +1,12 @@
 # Bouncers
-An exercise to learn about functions and classes.
+This game showcases random sprite movement.
 
-Please find instructions in [instructions.md](instructions.md).
+Controls:
+- A: Spawns new sprite
+- B: Logs the average x speed
+
+Play here: https://sodatax.github.io/bouncers/
+
+Gallery:
+
+![alt text](bouncers.gif)
