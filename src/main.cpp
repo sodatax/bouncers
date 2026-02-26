@@ -9,6 +9,8 @@
 
 #include "bn_sprite_items_dot.h"
 
+bn::random rng = bn::random();
+
 // Set min/max x/y position to be the edges of the display
 static constexpr int HALF_SCREEN_WIDTH = bn::display::width() / 2;
 static constexpr int HALF_SCREEN_HEIGHT = bn::display::height() / 2;
@@ -26,13 +28,8 @@ static constexpr int MAX_BOUNCERS = 20;
 class Bouncer {
     public:
         bn::sprite_ptr sprite = bn::sprite_items::dot.create_sprite();
-        bn::fixed x_speed;
-        bn::fixed y_speed;
-
-        Bouncer(bn::random& rng){
-            x_speed = bn::fixed(rng.get_int(BASE_SPEED.integer()) + 1);
-            y_speed = bn::fixed(rng.get_int(BASE_SPEED.integer()) + 1);
-        }
+        bn::fixed x_speed = rng.get_fixed(-1, 9);
+        bn::fixed y_speed = rng.get_fixed(-1, 9);
 
         void update(){
             bn::fixed x = sprite.x();
@@ -93,23 +90,22 @@ bn::fixed average_x(bn::vector<Bouncer, MAX_BOUNCERS>& bouncers){
     return x_average;
 }
 
-void add_bouncer(bn::vector<Bouncer, MAX_BOUNCERS>& bouncers, bn::random& rng){
+void add_bouncer(bn::vector<Bouncer, MAX_BOUNCERS>& bouncers){
     // Only add if we're below the maximum
     if(bouncers.size() < bouncers.max_size()) {
-        bouncers.push_back(Bouncer(rng));
+        bouncers.push_back(Bouncer());
     }
 }
 
 int main() {
     bn::core::init();
-    bn::random rng;
 
     bn::vector<Bouncer, MAX_BOUNCERS> bouncers = {};
 
     while(true) {
         // if A is pressed add a new bouncer
         if(bn::keypad::a_pressed()) {
-            add_bouncer(bouncers, rng);
+            add_bouncer(bouncers);
         }
 
         if(bn::keypad::b_pressed()) {
@@ -121,6 +117,7 @@ int main() {
             bouncer.update();
         }
 
+        rng.update();
         bn::core::update();
     }
 }
